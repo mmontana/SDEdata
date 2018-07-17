@@ -24,18 +24,41 @@ class BaseModel(object):
             trajs.append(traj.copy())
         return trajs,time
     
-class BrownianMotion(BaseModel):
+class BrownianMotion1d(BaseModel):
 
-    def __init__(self,mu=0,cov=1):
-        super(BrownianMotion,self).__init__()
+    def __init__(self,mu=0,sigma=1):
+        super(BrownianMotion1d,self).__init__()
         self.mu = mu
-        self.cov = cov
+        self.sigma = sigma
         
     def integrate(self,X,t,dt):
-        super(BrownianMotion,self).integrate(X,t,dt)
-        if type(self.mu) is not np.ndarray:
-            return X + np.random.normal(loc=self.mu,scale=np.sqrt(self.cov))
-        else:
-            return X + np.random.multivariate_normal(mean=self.mu,cov=self.cov)
+        super(BrownianMotion1d,self).integrate(X,t,dt)
+        return X + self.mu*dt + self.sigma * np.random.normal(loc=0,scale=np.sqrt(dt))
+
     
+class GeomBrownianMotion1d(BaseModel):
     
+    def __init__(self,mu=0,sigma=1):
+        super(GeomBrownianMotion1d,self).__init__()
+        self.mu = mu
+        self.sigma=sigma
+        
+    def integrate(self,X,t,dt):
+        super(GeomBrownianMotion1d,self).integrate(X,t,dt)
+        return X * np.exp((self.mu-.5*self.sigma**2 * dt +
+                           self.sigma * np.random.normal(loc=0,scale=np.sqrt(dt))))
+                          
+                          
+#class BrownianMotion(BaseModel):
+
+#    def __init__(self,mu=0,cov=1):
+#        super(BrownianMotion,self).__init__()
+#        self.mu = mu
+#        self.cov = cov
+        
+#    def integrate(self,X,t,dt):
+#        super(BrownianMotion,self).integrate(X,t,dt)
+#        if type(self.mu) is not np.ndarray:
+#            return X + np.random.normal(loc=self.mu,scale=np.sqrt(self.cov))
+#        else:
+#            return X + np.random.multivariate_normal(mean=self.mu,cov=self.cov)
