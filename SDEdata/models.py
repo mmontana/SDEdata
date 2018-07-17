@@ -62,3 +62,22 @@ class GeomBrownianMotion1d(BaseModel):
 #            return X + np.random.normal(loc=self.mu,scale=np.sqrt(self.cov))
 #        else:
 #            return X + np.random.multivariate_normal(mean=self.mu,cov=self.cov)
+
+class Lorenz(BaseModel):
+    
+    def __init__(self,sigma=10,rho=28, b=8.0/3, epsilon=0.3):
+        super(Lorenz,self).__init__()
+        self.sigma=sigma
+        self.rho=rho
+        self.b=b
+        self.epsilon=epsilon
+        
+    def integrate(self,X,t,dt):
+        super(Lorenz,self).integrate(X,t,dt)
+        X_ = np.ndarray(3)
+        W = np.random.multivariate_normal(mean=np.zeros(3),cov=dt*np.eye(3))
+        X_[0] = X[0] + dt*self.sigma*(X[1] - X[0]) + self.epsilon*X[0]*W[0]
+        X_[1] = X[1] + dt* (self.rho*X[0] - X[1] - X[0]*X[2]) + self.epsilon*X[1]*W[1]
+        X_[2] = X[2] + dt* (-self.b*X[2] + X[0]*X[1]) + self.epsilon * X[2] *W[2]
+        return X_
+                          
