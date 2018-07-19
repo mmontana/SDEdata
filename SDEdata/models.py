@@ -92,7 +92,25 @@ class DoubleWell2d(BaseModel):
         
         W = np.random.multivariate_normal(mean=np.zeros(2),cov=dt*np.eye(2))
         
-        X_1 = X[0] - dt*4*(X[0]**3) + dt*4*X[0] + self.sigma*W[0] 
-        X_2 = X[1] - dt*(2*(X[1])) + self.sigma*W[0]
+        X_0 = X[0] - dt*4*(X[0]**3) + dt*4*X[0] + self.sigma*W[0] 
+        X_1 = X[1] - dt*(2*(X[1])) + self.sigma*W[0]
+        return np.array([X_0,X_1])
+    
+class Roessler3d(BaseModel):
+    
+    def __init__(self,alpha=.1,beta=.1,gamma=14,sigma=0):
+        super(Roessler3d,self).__init__()
+        self.alpha=alpha
+        self.beta=beta
+        self.gamma=gamma
+        self.sigma=sigma
         
-        return np.array([X_1,X_2])
+    def integrate(self,X,t,dt):
+        super(Roessler3d,self).integrate(X,t,dt)
+        
+        W = np.random.multivariate_normal(mean=np.zeros(3),cov=dt*np.eye(3))
+        
+        X_0 = X[0] + dt*(- X[1] - X[2]) + self.sigma*W[0] 
+        X_1 = X[1] + dt*(X[0] + self.alpha * X[1]) + self.sigma*W[1]
+        X_2 = X[2] + dt*(self.beta + X[2]*(X[0]-self.gamma)) + self.sigma*W[2]
+        return np.array([X_0,X_1,X_2])
